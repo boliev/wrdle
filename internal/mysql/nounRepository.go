@@ -21,8 +21,11 @@ func CreateNounRepository(db *gorm.DB) repository.Noun {
 // FindForPuzzle find a random word for puzzle
 func (r NounRepository) FindForPuzzle(exclude []string) (*domain.Noun, error) {
 	var noun domain.Noun
-	// TODO: implement exclude
-	result := r.db.Table("nouns").Where("is_for_puzzle = ? ", true).Order("rand()").First(&noun)
+	result := r.db.
+		Table("nouns").
+		Where("is_for_puzzle = ? and word not in ?", true, exclude).
+		Order("rand()").
+		First(&noun)
 	if result.Error != nil {
 		return nil, result.Error
 	}
