@@ -7,6 +7,7 @@ require (
 	github.com/coreos/etcd v3.3.10+incompatible // indirect
 	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
+	github.com/go-co-op/gocron v1.14.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

@@ -1,21 +1,43 @@
 package main
 
 import (
+	"fmt"
 	"github.com/boliev/wrdle"
 	"github.com/boliev/wrdle/internal/controller"
+	"github.com/boliev/wrdle/internal/domain"
 	"github.com/boliev/wrdle/internal/mysql"
+	"github.com/boliev/wrdle/internal/service"
 	"github.com/boliev/wrdle/pkg/config"
+	"github.com/go-co-op/gocron"
 	mysqlDriver "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 func main() {
 	cfg := DiCreateConfig()
 	nounRepository := mysql.CreateNounRepository(DiCreateDB(cfg))
+	wordOfTheDayRepository := mysql.CreateWordOfTheDayRepository(DiCreateDB(cfg))
+	wordOfTheDaySetter := service.CreateWordOfTheDaySetter(wordOfTheDayRepository, nounRepository)
 	checkController := controller.CreateCheckController(nounRepository)
+	wordOfTheDayController := controller.CreateWordOfTheDayController(wordOfTheDaySetter)
+
+	// crons
+	cron := gocron.NewScheduler(time.UTC)
+	cron.Every(1).Day().At(cfg.GetString("new_word_time_utc")).Do(func() {
+		newWord, err := wordOfTheDaySetter.SetNewWord()
+		if err != nil {
+			panic(err.Error())
+		}
+		fmt.Printf("Word setted %s\n", newWord.Word)
+	})
+	cron.StartAsync()
+
+	// API
 	app := wrdle.App{
-		CheckController: checkController,
+		CheckController:        checkController,
+		WordOfTheDayController: wordOfTheDayController,
 	}
 	app.Start()
 }
@@ -26,6 +48,10 @@ func DiCreateDB(cfg *config.Config) *gorm.DB {
 	if err != nil {
 		log.Panicf("error: %s", err.Error())
 	}
+	if err != nil {
+		log.Panicf("error: %s", err.Error())
+	}
+	err = db.AutoMigrate(&domain.WordOfTheDay{})
 	if err != nil {
 		log.Panicf("error: %s", err.Error())
 	}

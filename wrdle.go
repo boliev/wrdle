@@ -7,7 +7,8 @@ import (
 
 // App the app
 type App struct {
-	CheckController *controller.Check
+	CheckController        *controller.Check
+	WordOfTheDayController *controller.WordOfTheDay
 }
 
 // Start the app
@@ -18,6 +19,10 @@ func (app App) Start() {
 		check := v1.Group("/check")
 		{
 			check.GET("/:word", app.CheckController.Check)
+		}
+		wordOfTheDay := v1.Group("/word-of-the-day")
+		{
+			wordOfTheDay.POST("/", app.WordOfTheDayController.Set)
 		}
 	}
 	err := r.Run()
