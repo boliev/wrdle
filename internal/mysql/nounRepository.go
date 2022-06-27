@@ -32,3 +32,16 @@ func (r NounRepository) FindForPuzzle(exclude []string) (*domain.Noun, error) {
 
 	return &noun, nil
 }
+
+// Find find a word by primary key
+func (r NounRepository) Find(word string) (*domain.Noun, error) {
+	var noun domain.Noun
+	result := r.db.
+		Table("nouns").
+		First(&noun, "word = ?", word)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &noun, nil
+}

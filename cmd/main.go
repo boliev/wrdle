@@ -20,7 +20,8 @@ func main() {
 	nounRepository := mysql.CreateNounRepository(DiCreateDB(cfg))
 	wordOfTheDayRepository := mysql.CreateWordOfTheDayRepository(DiCreateDB(cfg))
 	wordOfTheDaySetter := service.CreateWordOfTheDaySetter(wordOfTheDayRepository, nounRepository)
-	gameController := controller.CreateGameController(wordOfTheDayRepository)
+	nounChecker := service.CreateNounChecker()
+	gameController := controller.CreateGameController(wordOfTheDayRepository, nounRepository, nounChecker)
 	wordOfTheDayController := controller.CreateWordOfTheDayController(wordOfTheDaySetter)
 
 	// crons

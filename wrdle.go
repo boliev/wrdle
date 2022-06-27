@@ -19,7 +19,7 @@ func (app App) Start() {
 		game := v1.Group("/game")
 		{
 			game.GET("/start", app.GameController.Start)
-			//game.GET("/:word", app.CheckController.Check)
+			game.GET("/check/:id/:word", app.GameController.Check)
 		}
 		wordOfTheDay := v1.Group("/word-of-the-day")
 		{
