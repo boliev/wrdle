@@ -7,7 +7,7 @@ import (
 
 // App the app
 type App struct {
-	CheckController        *controller.Check
+	GameController         *controller.Game
 	WordOfTheDayController *controller.WordOfTheDay
 }
 
@@ -16,9 +16,10 @@ func (app App) Start() {
 	r := gin.Default()
 	v1 := r.Group("/v1")
 	{
-		check := v1.Group("/check")
+		game := v1.Group("/game")
 		{
-			check.GET("/:word", app.CheckController.Check)
+			game.GET("/start", app.GameController.Start)
+			//game.GET("/:word", app.CheckController.Check)
 		}
 		wordOfTheDay := v1.Group("/word-of-the-day")
 		{

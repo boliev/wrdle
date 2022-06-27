@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"errors"
 	"github.com/boliev/wrdle/internal/domain"
 	"github.com/boliev/wrdle/internal/repository"
 	"gorm.io/gorm"
@@ -39,4 +40,17 @@ func (r WordOfTheDayRepository) GetLast(count int) ([]domain.WordOfTheDay, error
 	}
 
 	return words, nil
+}
+
+// GetCurrent returns current word of the day
+func (r WordOfTheDayRepository) GetCurrent() (*domain.WordOfTheDay, error) {
+	words, err := r.GetLast(1)
+	if err != nil {
+		return nil, err
+	}
+	if len(words) < 1 {
+		return nil, errors.New("there is no word of the day")
+	}
+
+	return &words[0], nil
 }

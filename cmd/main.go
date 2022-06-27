@@ -20,7 +20,7 @@ func main() {
 	nounRepository := mysql.CreateNounRepository(DiCreateDB(cfg))
 	wordOfTheDayRepository := mysql.CreateWordOfTheDayRepository(DiCreateDB(cfg))
 	wordOfTheDaySetter := service.CreateWordOfTheDaySetter(wordOfTheDayRepository, nounRepository)
-	checkController := controller.CreateCheckController(nounRepository)
+	gameController := controller.CreateGameController(wordOfTheDayRepository)
 	wordOfTheDayController := controller.CreateWordOfTheDayController(wordOfTheDaySetter)
 
 	// crons
@@ -36,7 +36,7 @@ func main() {
 
 	// API
 	app := wrdle.App{
-		CheckController:        checkController,
+		GameController:         gameController,
 		WordOfTheDayController: wordOfTheDayController,
 	}
 	app.Start()
