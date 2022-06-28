@@ -17,16 +17,19 @@ import (
 
 func main() {
 	cfg := DiCreateConfig()
+	nextWordTimeCalc := service.CreateNextWordTimeCalculator(cfg.GetInt("new_word_time_h_utc"), cfg.GetInt("new_word_time_m_utc"))
 	nounRepository := mysql.CreateNounRepository(DiCreateDB(cfg))
 	wordOfTheDayRepository := mysql.CreateWordOfTheDayRepository(DiCreateDB(cfg))
 	wordOfTheDaySetter := service.CreateWordOfTheDaySetter(wordOfTheDayRepository, nounRepository)
 	nounChecker := service.CreateNounChecker()
-	gameController := controller.CreateGameController(wordOfTheDayRepository, nounRepository, nounChecker)
+	gameController := controller.CreateGameController(wordOfTheDayRepository, nounRepository, nounChecker, nextWordTimeCalc.GetTimeForNextWord())
 	wordOfTheDayController := controller.CreateWordOfTheDayController(wordOfTheDaySetter)
 
 	// crons
 	cron := gocron.NewScheduler(time.UTC)
-	cron.Every(1).Day().At(cfg.GetString("new_word_time_utc")).Do(func() {
+	cron.Every(1).Day().At(
+		cfg.GetString("new_word_time_h_utc") + cfg.GetString("new_word_time_m_utc"),
+	).Do(func() {
 		newWord, err := wordOfTheDaySetter.SetNewWord()
 		if err != nil {
 			panic(err.Error())
