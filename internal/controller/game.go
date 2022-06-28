@@ -8,6 +8,7 @@ import (
 	"github.com/boliev/wrdle/internal/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 // Game controller
@@ -15,6 +16,7 @@ type Game struct {
 	WordOfTheDayRepository repository.WordOfTheDay
 	NounRepository         repository.Noun
 	NounChecker            *service.NounChecker
+	NextWordTime           time.Time
 }
 
 // CreateGameController Game controller constructor
@@ -22,11 +24,13 @@ func CreateGameController(
 	wordOfTheDayRepository repository.WordOfTheDay,
 	nounRepository repository.Noun,
 	nounChecker *service.NounChecker,
+	nextWordTime time.Time,
 ) *Game {
 	return &Game{
 		WordOfTheDayRepository: wordOfTheDayRepository,
 		NounRepository:         nounRepository,
 		NounChecker:            nounChecker,
+		NextWordTime:           nextWordTime,
 	}
 }
 
@@ -38,7 +42,7 @@ func (c Game) Start(g *gin.Context) {
 		return
 	}
 
-	g.JSON(http.StatusBadRequest, response.CreateStartGameResponse(word))
+	g.JSON(http.StatusBadRequest, response.CreateStartGameResponse(word, c.NextWordTime))
 }
 
 // Check action for checking user word against word of the day
