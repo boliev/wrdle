@@ -1,4 +1,6 @@
 # wrdle
+Golang implementation of the [wordle game](https://www.nytimes.com/games/wordle/index.html)
+
 to start
 ```shell
 go run cmd/main.go
